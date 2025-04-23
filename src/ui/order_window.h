@@ -51,6 +51,11 @@ void mostrar_dialogo_visualizar_pedido(GtkWindow *parent, Pedido *pedido);
 void atualizar_totais_pedido(OrderWindow *win);
 void atualizar_troco(OrderWindow *win);
 
+// Funções de preenchimento de widgets
+void preencher_combo_clientes(GtkComboBox *combo);
+void preencher_lista_produtos(GtkTreeView *tree_view);
+void configurar_colunas_itens_pedido(GtkTreeView *tree_view);
+
 // Funções de atualização (definidas em main_window.h)
 void atualizar_lista_pedidos(void);
 
