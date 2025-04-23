@@ -91,6 +91,9 @@ static void on_activate(GtkApplication *app, gpointer user_data) {
     
     // Criar e mostrar a janela principal
     criar_janela_principal();
+    
+    // Iniciar o loop principal do GTK
+    gtk_main();
 }
 
 int main(int argc, char *argv[]) {
