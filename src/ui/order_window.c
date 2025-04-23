@@ -225,6 +225,129 @@ static void desabilitar_edicao(OrderWindow *win) {
     gtk_widget_set_sensitive(win->entry_valor_pago, FALSE);
 }
 
+void preencher_combo_clientes(GtkComboBox *combo) {
+    GtkListStore *store = gtk_list_store_new(2, G_TYPE_INT, G_TYPE_STRING);
+    GtkTreeIter iter;
+    
+    for (int i = 0; i < num_clientes; i++) {
+        Cliente *c = &clientes[i];
+        gtk_list_store_append(store, &iter);
+        gtk_list_store_set(store, &iter,
+                          0, c->id,
+                          1, c->nome,
+                          -1);
+    }
+    
+    gtk_combo_box_set_model(combo, GTK_TREE_MODEL(store));
+    g_object_unref(store);
+    
+    GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+    gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo), renderer, TRUE);
+    gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), renderer,
+                                 "text", 1,
+                                 NULL);
+}
+
+void preencher_lista_produtos(GtkTreeView *tree_view) {
+    GtkListStore *store = gtk_list_store_new(5,
+                                            G_TYPE_INT,    // ID
+                                            G_TYPE_STRING, // Nome
+                                            G_TYPE_DOUBLE, // Preço Base
+                                            G_TYPE_DOUBLE, // IVA
+                                            G_TYPE_DOUBLE  // Preço Total
+                                            );
+    
+    GtkTreeIter iter;
+    for (int i = 0; i < num_produtos; i++) {
+        Produto *p = &produtos[i];
+        double iva = calcular_iva(p->preco);
+        double total = calcular_preco_com_iva(p->preco);
+        
+        gtk_list_store_append(store, &iter);
+        gtk_list_store_set(store, &iter,
+                          0, p->id,
+                          1, p->nome,
+                          2, p->preco,
+                          3, iva,
+                          4, total,
+                          -1);
+    }
+    
+    gtk_tree_view_set_model(tree_view, GTK_TREE_MODEL(store));
+    g_object_unref(store);
+    
+    // Configurar colunas
+    GtkCellRenderer *renderer;
+    GtkTreeViewColumn *column;
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("ID", renderer, "text", 0, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("Nome", renderer, "text", 1, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("Preço", renderer, "text", 2, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("IVA", renderer, "text", 3, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("Total", renderer, "text", 4, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+}
+
+void configurar_colunas_itens_pedido(GtkTreeView *tree_view) {
+    GtkListStore *store = gtk_list_store_new(7,
+                                            G_TYPE_STRING, // Produto
+                                            G_TYPE_INT,    // Quantidade
+                                            G_TYPE_DOUBLE, // Preço Unit
+                                            G_TYPE_DOUBLE, // IVA Unit
+                                            G_TYPE_DOUBLE, // Subtotal
+                                            G_TYPE_DOUBLE, // IVA Total
+                                            G_TYPE_DOUBLE  // Total
+                                            );
+    
+    gtk_tree_view_set_model(tree_view, GTK_TREE_MODEL(store));
+    g_object_unref(store);
+    
+    // Configurar colunas
+    GtkCellRenderer *renderer;
+    GtkTreeViewColumn *column;
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("Produto", renderer, "text", 0, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("Qtd", renderer, "text", 1, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("Preço Unit.", renderer, "text", 2, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("IVA Unit.", renderer, "text", 3, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("Subtotal", renderer, "text", 4, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("IVA Total", renderer, "text", 5, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+    
+    renderer = gtk_cell_renderer_text_new();
+    column = gtk_tree_view_column_new_with_attributes("Total", renderer, "text", 6, NULL);
+    gtk_tree_view_append_column(tree_view, column);
+}
+
 void mostrar_dialogo_pedido(GtkWindow *parent, Pedido *pedido) {
     OrderWindow *win = g_new0(OrderWindow, 1);
     win->pedido = pedido;
