@@ -196,7 +196,8 @@ void criar_janela_principal(void) {
     // Adicionar stack à janela principal
     gtk_container_add(GTK_CONTAINER(main_window->window), main_window->stack);
     
-    // Conectar sinais
+    // Conectar sinais para fechar o programa corretamente
+    g_signal_connect(main_window->window, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(main_window->window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     
     // Mostrar todos os widgets
