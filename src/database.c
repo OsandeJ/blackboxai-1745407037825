@@ -231,7 +231,37 @@ gboolean adicionar_pedido(Pedido *pedido) {
 
 // Inicialização e finalização
 gboolean inicializar_database(void) {
-    criar_diretorios_necessarios();
+    // Criar diretórios necessários
+    criar_diretorio_se_nao_existe("data");
+    criar_diretorio_se_nao_existe("data/backup");
+    criar_diretorio_se_nao_existe("data/faturas");
+    
+    // Se os arquivos não existem, criar arquivos vazios
+    FILE *fp;
+    
+    // Criar arquivo de produtos se não existe
+    fp = fopen(ARQUIVO_PRODUTOS, "ab");
+    if (fp) {
+        fclose(fp);
+    } else {
+        return FALSE;
+    }
+    
+    // Criar arquivo de clientes se não existe
+    fp = fopen(ARQUIVO_CLIENTES, "ab");
+    if (fp) {
+        fclose(fp);
+    } else {
+        return FALSE;
+    }
+    
+    // Criar arquivo de pedidos se não existe
+    fp = fopen(ARQUIVO_PEDIDOS, "ab");
+    if (fp) {
+        fclose(fp);
+    } else {
+        return FALSE;
+    }
     
     // Carregar todos os dados
     gboolean success = TRUE;
